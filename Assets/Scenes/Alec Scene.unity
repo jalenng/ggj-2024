@@ -249,7 +249,7 @@ Camera:
   m_Enabled: 1
   serializedVersion: 2
   m_ClearFlags: 1
-  m_BackGroundColor: {r: 0.19215687, g: 0.3019608, b: 0.4745098, a: 0}
+  m_BackGroundColor: {r: 0.91764706, g: 0.83137256, b: 0.6666667, a: 0}
   m_projectionMatrixMode: 1
   m_GateFitMode: 2
   m_FOVAxisMode: 0
@@ -1688,6 +1688,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 5096342694156126571, guid: ae3579bd9cb5ca7479d9a15ddb834486, type: 3}
+      propertyPath: value
+      value: 100
+      objectReference: {fileID: 0}
     - target: {fileID: 5259514901763798327, guid: ae3579bd9cb5ca7479d9a15ddb834486, type: 3}
       propertyPath: m_Name
       value: Melk
@@ -1705,6 +1709,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 2655022383442291616, guid: 3fe3e74ccd8696a41a4f5e64da04f03f, type: 3}
+      propertyPath: value
+      value: 100
+      objectReference: {fileID: 0}
     - target: {fileID: 3263145694939461973, guid: 3fe3e74ccd8696a41a4f5e64da04f03f, type: 3}
       propertyPath: m_Name
       value: Beer
@@ -1806,6 +1814,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Borgir
       objectReference: {fileID: 0}
+    - target: {fileID: 4560457156350410289, guid: c2fe1cf09b72ff44a8925777fa44bdb7, type: 3}
+      propertyPath: value
+      value: 100
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -1819,6 +1831,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 4880929390977873037, guid: 88cf99caa8205d749b22b900b6b75855, type: 3}
+      propertyPath: value
+      value: 100
+      objectReference: {fileID: 0}
     - target: {fileID: 6719772719042861388, guid: 88cf99caa8205d749b22b900b6b75855, type: 3}
       propertyPath: m_Name
       value: Cheese
@@ -1876,6 +1892,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 3372818817084921538, guid: 0a22213f48f903341a3881a123e27c94, type: 3}
+      propertyPath: value
+      value: 100
+      objectReference: {fileID: 0}
     - target: {fileID: 4580007620366365577, guid: 0a22213f48f903341a3881a123e27c94, type: 3}
       propertyPath: m_LocalPosition.x
       value: -6
