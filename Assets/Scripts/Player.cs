@@ -48,6 +48,8 @@ public class Player : MonoBehaviour
     //[SerializeField] protected float fartMeter = 0f;
     public float fartMeter = 0f;
 
+    public bool disableClick = false;
+
     // SFX
     [SerializeField] protected List<AudioClip> fartAudioClips;
 
@@ -69,8 +71,8 @@ public class Player : MonoBehaviour
         numFarts = 1f;
         tickleMeter = 0;
         fartMeter = 0;
-        fartBar.fillAmount = 0;
-        tickleBar.fillAmount = 0;
+        if (fartBar != null) fartBar.fillAmount = 0;
+        if (tickleBar != null) tickleBar.fillAmount = 0;
 
         this.spriteRenderer.sprite = default_sprite;
     }
@@ -85,7 +87,7 @@ public class Player : MonoBehaviour
             {
                 // reduce fart meter and update sprite (rate is 50/s from FixedUpdate)
                 fartMeter = Mathf.Max(fartMeter - deflate_rate, 0);
-                fartBar.fillAmount = fartMeter / 100;
+                if (fartBar != null) fartBar.fillAmount = fartMeter / 100;
                 UpdateSprite();
 
                 // update movement if farting
@@ -93,7 +95,7 @@ public class Player : MonoBehaviour
                 {
                     // reduce fart meter to 0 over 2 seconds
                     fartMeter = Mathf.Max(fartMeter - 1f, 0);
-                    fartBar.fillAmount = fartMeter / 100;
+                    if (fartBar != null) fartBar.fillAmount = fartMeter / 100;
                     UpdateSprite();
 
                     Vector2 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
@@ -194,10 +196,10 @@ public class Player : MonoBehaviour
     // ..
     // OnFart() -- Add large force to player
     // ..
-    protected void OnFart()
+    public void OnFart(bool overrideCheck = false)
     {
         //if (fartMeter == 100)
-        if (numFarts > 0 && fartMeter == 100)
+        if (overrideCheck || (numFarts > 0 && fartMeter == 100))
         {
             //Debug.Log("right click to fart");
             // handle timer for fart duration
@@ -271,7 +273,7 @@ public class Player : MonoBehaviour
         body.gravityScale = 1;
     }
 
-    protected void UpdateSprite()
+    public void UpdateSprite()
     {
 
         spriteRenderer.sprite = sprite_sizes[ (int)Mathf.Min(fartMeter / 10f, 8f)];
@@ -340,16 +342,18 @@ public class Player : MonoBehaviour
             spriteRenderer.sprite = nervous_sprite;
         }
 
-        // on right click
-        if (Input.GetMouseButtonDown(0))
-        {
-            OnTickle();
-        }
+        if (!disableClick) {
+            // on right click
+            if (Input.GetMouseButtonDown(0))
+            {
+                OnTickle();
+            }
 
-        // on left click
-        if (Input.GetMouseButtonDown(1) && activeFarting)
-        {
-            OnFart();
+            // on left click
+            if (Input.GetMouseButtonDown(1) && activeFarting)
+            {
+                OnFart();
+            }
         }
     }
 
