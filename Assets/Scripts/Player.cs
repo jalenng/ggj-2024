@@ -35,7 +35,7 @@ public class Player : MonoBehaviour
     [SerializeField] protected float ticklePower = 10f;
     [SerializeField] protected float tickleMultiplier = 4f; // how much tickle power influences tickle meter filling up
 
-    [SerializeField] protected float fartPower = 300f;    
+    [SerializeField] protected float fartPower = 200f;    
     [SerializeField] protected float tickleMeter = 0f;
     [SerializeField] protected float fartMeter = 0f;
     
@@ -81,7 +81,11 @@ public class Player : MonoBehaviour
             fartMeter = Mathf.Max (fartMeter - 1f, 0);
             //transform.localScale = Vector3.one * (fartMeter/100 + 1);
             fartBar.fillAmount = fartMeter / 100;
-
+        
+            Vector2 dir = transform.position - fart_sprite.transform.position;
+            dir.Normalize();
+            body.velocity = Vector3.zero; // zero out velocity (tweak this for jump feel)
+            body.AddForce(dir * fartPower);
 
             // continuous raycast for automatic movement during fart
             Vector2 ray = Camera.main.ScreenToWorldPoint(Input.mousePosition);
@@ -95,8 +99,7 @@ public class Player : MonoBehaviour
                 float angle = Mathf.Atan2(diff.y,diff.x) * Mathf.Rad2Deg;
                 transform.rotation = Quaternion.AngleAxis(angle, Vector3.forward);
                 
-                body.velocity = Vector3.zero; // zero out velocity (tweak this for jump feel)
-                
+                //body.velocity = Vector3.zero; // zero out velocity (tweak this for jump feel)
                 body.AddForce(diff * fartPower);
             }
         }
@@ -173,7 +176,7 @@ public class Player : MonoBehaviour
             fart_sprite.SetActive(true);
             spriteRenderer.sprite = nervous_sprite;
 
-            StartCoroutine(Camera.main.GetComponent<CameraManager>().Shake(2f, .2f));
+            StartCoroutine(Camera.main.GetComponent<CameraManager>().Shake(2f, .1f));
 
             // handle timer for fart duration
             StopCoroutine(handle_fart);
