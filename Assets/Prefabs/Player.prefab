@@ -655,7 +655,6 @@ GameObject:
   - component: {fileID: 6328157924185786436}
   - component: {fileID: 8315882186909870384}
   - component: {fileID: 7405850454260302260}
-  - component: {fileID: 6765691865960835330}
   - component: {fileID: 4224518652103963605}
   - component: {fileID: 520246065173379629}
   m_Layer: 0
@@ -763,12 +762,14 @@ MonoBehaviour:
   tickleBar: {fileID: 7405589105679907721}
   alive: 1
   farting: 0
+  deflating: 0
   canTickle: 1
   activeFarting: 1
   ticklePower: 10
   tickleMultiplier: 4
   numJumps: 3
   numFarts: 1
+  deflate_rate: 1
   fartPower: 400
   tickleMeter: 0
   fartMeter: 100
@@ -777,51 +778,6 @@ MonoBehaviour:
   - {fileID: 8300000, guid: ffc8f397150e5a04b8d1f6c30b8415dd, type: 3}
   - {fileID: 8300000, guid: 6ced82558db67104bb4df67c5aaf1006, type: 3}
   - {fileID: 8300000, guid: c19d57c7ceb97a24fbd00bae3c12bfcf, type: 3}
---- !u!61 &6765691865960835330
-BoxCollider2D:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7897027907261389797}
-  m_Enabled: 1
-  m_Density: 1
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: -1
-  m_ForceSendLayers:
-    serializedVersion: 2
-    m_Bits: 4294967295
-  m_ForceReceiveLayers:
-    serializedVersion: 2
-    m_Bits: 4294967295
-  m_ContactCaptureLayers:
-    serializedVersion: 2
-    m_Bits: 4294967295
-  m_CallbackLayers:
-    serializedVersion: 2
-    m_Bits: 4294967295
-  m_IsTrigger: 0
-  m_UsedByEffector: 0
-  m_UsedByComposite: 0
-  m_Offset: {x: 0, y: 0}
-  m_SpriteTilingProperty:
-    border: {x: 0, y: 0, z: 0, w: 0}
-    pivot: {x: 0.5, y: 0.5}
-    oldSize: {x: 1.4375, y: 2.125}
-    newSize: {x: 1, y: 1}
-    adaptiveTilingThreshold: 0.5
-    drawMode: 0
-    adaptiveTiling: 0
-  m_AutoTiling: 0
-  serializedVersion: 2
-  m_Size: {x: 1.4375, y: 2.125}
-  m_EdgeRadius: 0
 --- !u!50 &4224518652103963605
 Rigidbody2D:
   serializedVersion: 4

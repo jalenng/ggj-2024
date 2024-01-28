@@ -9,7 +9,11 @@ public class Player : MonoBehaviour
     protected SpriteRenderer spriteRenderer;
     protected Rigidbody2D body;
     protected AudioSource audioSource;
-    protected BoxCollider2D col;
+    protected CapsuleCollider2D col;
+    
+    public bool grounded = false;
+
+    [SerializeField] LayerMask groundmask;
 
     [SerializeField] protected GameObject fart_emitter;
 
@@ -60,10 +64,11 @@ public class Player : MonoBehaviour
         spriteRenderer = this.GetComponent<SpriteRenderer>();
         body = this.GetComponent<Rigidbody2D>();
         audioSource = this.GetComponent<AudioSource>();
-        col = this.GetComponent<BoxCollider2D>();
+        col = this.GetComponent<CapsuleCollider2D>();
         alive = true;
         deflating = false;
         farting = false;
+        grounded = false;
 
         //handle_fart = Farting(fart_duration);
         handle_tickle_cd = TickleCD(tickle_cooldown);
@@ -87,8 +92,10 @@ public class Player : MonoBehaviour
             {
                 // reduce fart meter and update sprite (rate is 50/s from FixedUpdate)
                 fartMeter = Mathf.Max(fartMeter - deflate_rate, 0);
-                if (fartBar != null) fartBar.fillAmount = fartMeter / 100;
                 UpdateSprite();
+
+                if (fartBar != null) 
+                    fartBar.fillAmount = fartMeter / 100;
 
                 // update movement if farting
                 if (farting)
@@ -119,8 +126,41 @@ public class Player : MonoBehaviour
             }
         }
         
+        if (!grounded && alive)
+        {
+            Vector2 point = new Vector2(transform.position.x - col.size.x/2, transform.position.y - col.size.y/2);
+            RaycastHit2D hit = Physics2D.Raycast(point, Vector2.down, 1f, groundmask);
+
+            
+            Vector2 point2 = new Vector2(transform.position.x + col.size.x/2, transform.position.y - col.size.y/2);
+            RaycastHit2D hit2 = Physics2D.Raycast(point2, Vector2.down, 1f, groundmask);
+
+            Debug.Log(col.size.x + ", " + col.size.y);
+            Debug.Log(point);
+
+            if ((hit.collider && hit.distance <= 0.1f) || (hit2.collider && hit2.distance <= 0.1f))
+            {
+                
+                Ground();
+            }
+        }
     }
 
+    void Ground()
+    {
+        grounded = true;
+        Debug.Log(":GROUND");
+
+        body.velocity = Vector2.zero;
+        transform.rotation = Quaternion.identity;
+
+        deflate_rate = 10f;
+        deflating = true;
+        if (farting)
+            EndFart();
+        numFarts = 1;
+
+    }
 
     // .. 
     // OnCollect() -- executes when player collects food
@@ -132,6 +172,7 @@ public class Player : MonoBehaviour
         {
             //Debug.Log("collected object " + obj.obj_name);
             UpdateFartMeter(obj.value);
+            UpdateSprite();
 
             numFarts = 1;
             // Collectable handles Destroy
@@ -182,8 +223,9 @@ public class Player : MonoBehaviour
             {
                 if (fartMeter + 100/numJumps > 100)
                     HandleDeath();
+                else
                 //spriteRenderer.sprite = nervous_sprite;
-                UpdateFartMeter(100 / numJumps);
+                    UpdateFartMeter(100 / numJumps);
                 //UpdateTickleMeter(ticklePower * tickleMultiplier);
                 //UpdateTickleMeter(100/numJumps);
             }
@@ -267,6 +309,8 @@ public class Player : MonoBehaviour
 
         body.velocity = Vector2.zero;
 
+        grounded = false;
+
         yield return new WaitForSeconds(.2f);
 
         canTickle = true;
@@ -328,6 +372,10 @@ public class Player : MonoBehaviour
         //spriteRenderer.color = new Color(204f, 241f, 142f, 1f);
         GetComponent<Animator>().enabled =true;
         GetComponent<Animator>().Play("exploding");
+        
+        fartMeter = 0;
+        fartBar.fillAmount = 0;
+        
     }
 
 
@@ -369,41 +417,5 @@ public class Player : MonoBehaviour
     }
 
 
-    void OnCollisionEnter2D(Collision2D col)
-    {
-        //Debug.Log( col.contacts.Length );
-        if (body.velocity.y < 0 && col.GetContact(1).point.y < transform.position.y)
-        {
-            body.velocity = Vector2.zero;
-            transform.rotation = Quaternion.identity;
-
-            // fartMeter = 0;
-            // fartBar.fillAmount = 0;
-            // UpdateSprite();
-            deflate_rate = 5f;
-            deflating = true;
-            if (farting)
-                EndFart();
-            numFarts = 1;
-        }
-        
-        // foreach (ContactPoint2D c in col.contacts)
-        //     Debug.Log(c.point);
-    }
-
-    void OnCollisionStay2D(Collision2D col)
-    {
-        if (body.velocity.y < 0 && col.GetContact(1).point.y < transform.position.y)
-        {
-            body.velocity = Vector2.zero;
-            transform.rotation = Quaternion.identity;
-
-            deflate_rate = 10f;
-            deflating = true;
-            if (farting)
-                EndFart();
-            numFarts = 1;
-        }
-    }
 
 }
