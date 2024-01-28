@@ -272,6 +272,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5a6e8245d6d685d47a9747700a813741, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  shaking: 0
+  orignalPosition: {x: 0, y: 0, z: 0}
+  magnitude: 0.1
 --- !u!1 &950663839
 GameObject:
   m_ObjectHideFlags: 0
@@ -732,6 +735,30 @@ PrefabInstance:
     - target: {fileID: 5013619929877278128, guid: 9a33b60478f6e90488e1930a475a8e21, type: 3}
       propertyPath: m_Name
       value: Player
+      objectReference: {fileID: 0}
+    - target: {fileID: 6328157924185786436, guid: 9a33b60478f6e90488e1930a475a8e21, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6328157924185786436, guid: 9a33b60478f6e90488e1930a475a8e21, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6328157924185786436, guid: 9a33b60478f6e90488e1930a475a8e21, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7405850454260302260, guid: 9a33b60478f6e90488e1930a475a8e21, type: 3}
+      propertyPath: fartMeter
+      value: 100
+      objectReference: {fileID: 0}
+    - target: {fileID: 7405850454260302260, guid: 9a33b60478f6e90488e1930a475a8e21, type: 3}
+      propertyPath: fartPower
+      value: 100
+      objectReference: {fileID: 0}
+    - target: {fileID: 7405850454260302260, guid: 9a33b60478f6e90488e1930a475a8e21, type: 3}
+      propertyPath: activeFarting
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8315882186909870384, guid: 9a33b60478f6e90488e1930a475a8e21, type: 3}
       propertyPath: m_SortingOrder

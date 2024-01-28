@@ -75,35 +75,6 @@ public class Player : MonoBehaviour
 
         }
 
-        // reduce fart meter to 0 over 2 seconds
-        if (farting)// && transform.localScale.x > 1)
-        {
-            fartMeter = Mathf.Max (fartMeter - 1f, 0);
-            //transform.localScale = Vector3.one * (fartMeter/100 + 1);
-            fartBar.fillAmount = fartMeter / 100;
-        
-            Vector2 dir = transform.position - fart_sprite.transform.position;
-            dir.Normalize();
-            body.velocity = Vector3.zero; // zero out velocity (tweak this for jump feel)
-            body.AddForce(dir * fartPower);
-
-            // continuous raycast for automatic movement during fart
-            Vector2 ray = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-            RaycastHit2D hit = Physics2D.Raycast(ray, Vector2.zero);
-            if (hit)
-            {
-                Vector2 diff = new Vector2(transform.position.x, transform.position.y) - hit.point;
-                //Debug.Log("point: " + hit.point + " => " + diff);
-                diff.Normalize();
-
-                float angle = Mathf.Atan2(diff.y,diff.x) * Mathf.Rad2Deg;
-                transform.rotation = Quaternion.AngleAxis(angle, Vector3.forward);
-                
-                //body.velocity = Vector3.zero; // zero out velocity (tweak this for jump feel)
-                body.AddForce(diff * fartPower);
-            }
-        }
-
     }
 
 
@@ -169,18 +140,10 @@ public class Player : MonoBehaviour
         {
             //Debug.Log("right click to fart");
             
-            //
-            // TO IMPLEMENT --- 
-            farting = true;
-            body.gravityScale = fart_grav_scale;
-            fart_sprite.SetActive(true);
-            spriteRenderer.sprite = nervous_sprite;
-
-            StartCoroutine(Camera.main.GetComponent<CameraManager>().Shake(2f, .1f));
-
             // handle timer for fart duration
-            StopCoroutine(handle_fart);
+            //StopCoroutine(handle_fart);
             StartCoroutine(handle_fart);
+            handle_fart = Farting(fart_duration); // reset the iterator
         }
         else {
             Debug.Log("WARNING: Tried to fart with not enough gas.");
@@ -190,15 +153,44 @@ public class Player : MonoBehaviour
     protected IEnumerator Farting(float val)
     {
         //Debug.Log("Start Farting");
+        
+        farting = true;
+        body.gravityScale = fart_grav_scale;
+        fart_sprite.SetActive(true);
+        spriteRenderer.sprite = nervous_sprite;
 
-        // reset the iterator
-        handle_fart = Farting(fart_duration);
+        // camera shake
+        //StartCoroutine(Camera.main.GetComponent<CameraManager>().Shake(2f, .1f));
+        Camera.main.GetComponent<CameraManager>().shaking = true;
+        //float elapsed = 0f;
         
-        yield return new WaitForSeconds(val);
-        
+        while (fartMeter > 0)
+        {
+            // reduce fart meter to 0 over 2 seconds
+            fartMeter = Mathf.Max (fartMeter - .25f, 0);
+            //transform.localScale = Vector3.one * (fartMeter/100 + 1);
+            fartBar.fillAmount = fartMeter / 100;
+
+            // continuous raycast for automatic movement during fart
+            Vector2 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+            Vector2 diff = new Vector2(transform.position.x, transform.position.y) - mousePos;
+            //Debug.Log("point: " + hit.point + " => " + diff);
+            diff.Normalize();
+
+            float angle = Mathf.Atan2(diff.y,diff.x) * Mathf.Rad2Deg;
+            transform.rotation = Quaternion.AngleAxis(angle, Vector3.forward);
+            
+            body.velocity = Vector3.zero; // zero out velocity (tweak this for jump feel)
+            body.AddForce(diff * fartPower);
+
+            yield return new WaitForSeconds(0);
+        }
+
+        Camera.main.GetComponent<CameraManager>().shaking = false;
         //Debug.Log("Finish Farting");        
         farting = false;
         body.gravityScale = 1;
+        body.velocity = Vector2.zero;
         fart_sprite.SetActive(false);
 
     }
@@ -261,6 +253,7 @@ public class Player : MonoBehaviour
     protected void HandleDeath(){
         Debug.Log("DIE");
         alive = false;
+        body.gravityScale = 1f;
         //OnFart();
         spriteRenderer.sprite = default_sprite;
     }
@@ -297,9 +290,19 @@ public class Player : MonoBehaviour
     void OnMouseExit()
     {
         // change sprite
-        if (farting)
+        if (!farting)
             this.spriteRenderer.sprite = default_sprite;
     }
 
+
+    void OnCollisionEnter2D(Collision2D col)
+    {
+        if (col.gameObject.tag == "Ground")
+        {
+            body.velocity = Vector2.zero;
+
+            transform.rotation = Quaternion.identity;
+        }
+    }
     
 }
