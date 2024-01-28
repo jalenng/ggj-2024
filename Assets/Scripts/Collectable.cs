@@ -28,8 +28,11 @@ public class Collectable : MonoBehaviour
         {
             //Debug.Log("Collided with player");
             // player executes code 
-            other.GetComponent<Player>().OnCollect(this);
-            StartCoroutine(CollectCoroutine());
+            if (other.GetComponent<Player>().fartMeter < 100)
+            {
+                other.GetComponent<Player>().OnCollect(this);
+                StartCoroutine(CollectCoroutine());
+            }
         }
     }
 

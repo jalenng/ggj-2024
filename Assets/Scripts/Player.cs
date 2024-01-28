@@ -25,7 +25,8 @@ public class Player : MonoBehaviour
     IEnumerator handle_tickle_cd;
 
     [SerializeField] protected bool alive = true;
-    [SerializeField] protected bool farting = true;
+    [SerializeField] protected bool farting = false;
+    [SerializeField] protected bool deflating = false;
     [SerializeField] protected bool canTickle = true;
     [SerializeField] protected bool activeFarting = false;
 
@@ -41,9 +42,11 @@ public class Player : MonoBehaviour
 
     public float numJumps = 3f;
     public float numFarts = 1f;
+    [SerializeField] protected float deflate_rate = 1f;
     [SerializeField] protected float fartPower = 200f;
     [SerializeField] protected float tickleMeter = 0f;
-    [SerializeField] protected float fartMeter = 0f;
+    //[SerializeField] protected float fartMeter = 0f;
+    public float fartMeter = 0f;
 
     // SFX
     [SerializeField] protected List<AudioClip> fartAudioClips;
@@ -57,6 +60,7 @@ public class Player : MonoBehaviour
         audioSource = this.GetComponent<AudioSource>();
         col = this.GetComponent<BoxCollider2D>();
         alive = true;
+        deflating = false;
         farting = false;
 
         //handle_fart = Farting(fart_duration);
@@ -74,24 +78,19 @@ public class Player : MonoBehaviour
     // Update is called once per frame
     void FixedUpdate()
     {
-        if (alive)
+        if (deflating)
         {
-            // if (tickleMeter > 0)
-            // {
-            //     tickleMeter -= 1f;
-            //     tickleBar.fillAmount = tickleMeter / 100;
-            // }
-
-            // if (tickleMeter > 100)
-            // {
-            //     HandleDeath();
-            // }
-
-            if (farting)
+            // check for fart meter size
+            if (fartMeter > 0)
             {
-                if (fartMeter > 0)
-                {
+                // reduce fart meter and update sprite (rate is 50/s from FixedUpdate)
+                fartMeter = Mathf.Max(fartMeter - deflate_rate, 0);
+                fartBar.fillAmount = fartMeter / 100;
+                UpdateSprite();
 
+                // update movement if farting
+                if (farting)
+                {
                     // reduce fart meter to 0 over 2 seconds
                     fartMeter = Mathf.Max(fartMeter - 1f, 0);
                     fartBar.fillAmount = fartMeter / 100;
@@ -107,20 +106,17 @@ public class Player : MonoBehaviour
                     body.velocity = Vector3.zero; // zero out velocity (tweak this for jump feel)
                     body.AddForce(diff * fartPower);
                 }
-                else
+            }
+            else 
+            {
+                if (farting)
                 {
                     EndFart();
                 }
+                deflating = false;
             }
         }
-        else if (fartMeter > 0)
-        {
-            // reduce fart meter to 0 over 2 seconds
-            fartMeter = Mathf.Max(fartMeter - 1f, 0);
-            fartBar.fillAmount = fartMeter / 100;
-
-            UpdateSprite();
-        }
+        
     }
 
 
@@ -134,6 +130,8 @@ public class Player : MonoBehaviour
         {
             //Debug.Log("collected object " + obj.obj_name);
             UpdateFartMeter(obj.value);
+
+            numFarts = 1;
             // Collectable handles Destroy
         }
     }
@@ -145,8 +143,21 @@ public class Player : MonoBehaviour
     protected void OnTickle()
     {
         // disable tickling while farting or recent tickle
-        if (!farting && canTickle)
+        
+        if (canTickle)
         {
+            if (farting )
+            {
+                EndFart();
+                deflating = false;
+            }
+            else if (!farting && deflating)
+            {
+                deflating = false;
+                fartMeter = 0;
+                UpdateSprite();
+            }
+            
             //Debug.Log("click on object");
 
             // raycast to find angle of force
@@ -167,7 +178,7 @@ public class Player : MonoBehaviour
             //transform.localScale += Vector3.one * scaleChange;
             if (alive)
             {
-                if (fartMeter == 100)
+                if (fartMeter + 100/numJumps > 100)
                     HandleDeath();
                 //spriteRenderer.sprite = nervous_sprite;
                 UpdateFartMeter(100 / numJumps);
@@ -185,13 +196,15 @@ public class Player : MonoBehaviour
     // ..
     protected void OnFart()
     {
-        if (fartMeter == 100)
+        //if (fartMeter == 100)
+        if (numFarts > 0 && fartMeter == 100)
         {
             //Debug.Log("right click to fart");
-
             // handle timer for fart duration
             //StopCoroutine(handle_fart);
             farting = true;
+            deflate_rate = 1f;
+            deflating = true;
             body.gravityScale = fart_grav_scale;
             // fart_emitter.SetActive(true);
 
@@ -216,7 +229,7 @@ public class Player : MonoBehaviour
         }
         else
         {
-            Debug.Log("WARNING: Tried to fart with not enough gas.");
+            Debug.Log("WARNING: NO FARTS LEFT");
         }
     }
 
@@ -233,6 +246,7 @@ public class Player : MonoBehaviour
         //fart_emitter.SetActive(false);
         audioSource.Stop();
 
+        numFarts = 0;
     }
 
     protected IEnumerator TickleCD(float cd)
@@ -251,7 +265,7 @@ public class Player : MonoBehaviour
 
         body.velocity = Vector2.zero;
 
-        yield return new WaitForSeconds(.25f);
+        yield return new WaitForSeconds(.2f);
 
         canTickle = true;
         body.gravityScale = 1;
@@ -259,27 +273,8 @@ public class Player : MonoBehaviour
 
     protected void UpdateSprite()
     {
-        // fml
-        // if (fartMeter < 10)
-        //     spriteRenderer.sprite = sprite_sizes[0];
-        // else if (fartMeter < 20)
-        //     spriteRenderer.sprite = sprite_sizes[1];
-        // else if (fartMeter < 30)
-        //     spriteRenderer.sprite = sprite_sizes[2];
-        // else if (fartMeter < 40)
-        //     spriteRenderer.sprite = sprite_sizes[3];
-        // else if (fartMeter < 50)
-        //     spriteRenderer.sprite = sprite_sizes[4];
-        // else if (fartMeter < 60)
-        //     spriteRenderer.sprite = sprite_sizes[5];
-        // else if (fartMeter < 70)
-        //     spriteRenderer.sprite = sprite_sizes[6];
-        // else if (fartMeter < 80)
-        //     spriteRenderer.sprite = sprite_sizes[7];
-        // else
-        //     spriteRenderer.sprite = sprite_sizes[8];
 
-        spriteRenderer.sprite = sprite_sizes[(int)Mathf.Min(fartMeter / 10f, 8f)];
+        spriteRenderer.sprite = sprite_sizes[ (int)Mathf.Min(fartMeter / 10f, 8f)];
 
         // change collider size based on sprite size
         col.size = spriteRenderer.bounds.size;
@@ -325,11 +320,12 @@ public class Player : MonoBehaviour
         Debug.Log("DIE");
         alive = false;
         body.gravityScale = 1f;
-        //OnFart();
-        //spriteRenderer.sprite = default_sprite;
 
-        // TEMP change color to indicate death
-        spriteRenderer.color = new Color(204f, 241f, 142f, 1f);
+        // TEMP DEATH; REPLACE THIS WITH ANIMATION LATER
+        //deflating = true;
+        //spriteRenderer.color = new Color(204f, 241f, 142f, 1f);
+        GetComponent<Animator>().enabled =true;
+        GetComponent<Animator>().Play("exploding");
     }
 
 
@@ -371,29 +367,38 @@ public class Player : MonoBehaviour
 
     void OnCollisionEnter2D(Collision2D col)
     {
-        if (body.velocity.y < 0)
+        //Debug.Log( col.contacts.Length );
+        if (body.velocity.y < 0 && col.GetContact(1).point.y < transform.position.y)
         {
             body.velocity = Vector2.zero;
             transform.rotation = Quaternion.identity;
-            fartMeter = 0;
-            fartBar.fillAmount = 0;
-            UpdateSprite();
 
-            EndFart();
+            // fartMeter = 0;
+            // fartBar.fillAmount = 0;
+            // UpdateSprite();
+            deflate_rate = 5f;
+            deflating = true;
+            if (farting)
+                EndFart();
+            numFarts = 1;
         }
+        
+        // foreach (ContactPoint2D c in col.contacts)
+        //     Debug.Log(c.point);
     }
 
     void OnCollisionStay2D(Collision2D col)
     {
-        if (body.velocity.y < 0)
+        if (body.velocity.y < 0 && col.GetContact(1).point.y < transform.position.y)
         {
             body.velocity = Vector2.zero;
             transform.rotation = Quaternion.identity;
-            fartMeter = 0;
-            fartBar.fillAmount = 0;
-            UpdateSprite();
 
-            EndFart();
+            deflate_rate = 10f;
+            deflating = true;
+            if (farting)
+                EndFart();
+            numFarts = 1;
         }
     }
 
