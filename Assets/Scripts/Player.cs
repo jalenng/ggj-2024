@@ -241,7 +241,7 @@ public class Player : MonoBehaviour
     public void OnFart(bool overrideCheck = false)
     {
         //if (fartMeter == 100)
-        if (overrideCheck || (numFarts > 0 && fartMeter == 100))
+        if (overrideCheck || numFarts > 0)
         {
             //Debug.Log("right click to fart");
             // handle timer for fart duration
