@@ -24,7 +24,7 @@ public class Collectable : MonoBehaviour
     {
         if (other.tag == "Player")
         {
-            Debug.Log("Collided with player");
+            //Debug.Log("Collided with player");
             // player executes code 
             other.GetComponent<Player>().OnCollect(this);
         }
