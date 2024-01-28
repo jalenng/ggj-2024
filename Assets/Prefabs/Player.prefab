@@ -109,7 +109,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 1.2, y: 0}
+  m_AnchoredPosition: {x: 0.9, y: 0}
   m_SizeDelta: {x: 0.20000005, y: 1.5}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &4435299832216611569
@@ -622,7 +622,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &6560903167114722028
 RectTransform:
   m_ObjectHideFlags: 0
@@ -655,8 +655,10 @@ GameObject:
   - component: {fileID: 6328157924185786436}
   - component: {fileID: 8315882186909870384}
   - component: {fileID: 7405850454260302260}
+  - component: {fileID: 38227152955601313}
   - component: {fileID: 4224518652103963605}
   - component: {fileID: 520246065173379629}
+  - component: {fileID: 4074004169480407381}
   m_Layer: 0
   m_Name: Mr. Bean
   m_TagString: Player
@@ -745,6 +747,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9642a641913a5d5439457950bde2f50b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  grounded: 0
+  groundmask:
+    serializedVersion: 2
+    m_Bits: 64
   fart_emitter: {fileID: 6676284576305480257}
   default_sprite: {fileID: 301353007, guid: 09d2ff9db7518924e9bbafb0c3b80bdf, type: 3}
   nervous_sprite: {fileID: -285568466, guid: 09d2ff9db7518924e9bbafb0c3b80bdf, type: 3}
@@ -767,17 +773,53 @@ MonoBehaviour:
   activeFarting: 1
   ticklePower: 10
   tickleMultiplier: 4
-  numJumps: 3
+  numJumps: 2
   numFarts: 1
   deflate_rate: 1
   fartPower: 400
   tickleMeter: 0
   fartMeter: 100
+  disableClick: 0
   fartAudioClips:
   - {fileID: 8300000, guid: f2474db0b6fa3ef42b58dfa711f5493c, type: 3}
   - {fileID: 8300000, guid: ffc8f397150e5a04b8d1f6c30b8415dd, type: 3}
   - {fileID: 8300000, guid: 6ced82558db67104bb4df67c5aaf1006, type: 3}
   - {fileID: 8300000, guid: c19d57c7ceb97a24fbd00bae3c12bfcf, type: 3}
+--- !u!70 &38227152955601313
+CapsuleCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7897027907261389797}
+  m_Enabled: 1
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_ForceSendLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ForceReceiveLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ContactCaptureLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_CallbackLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_IsTrigger: 0
+  m_UsedByEffector: 0
+  m_UsedByComposite: 0
+  m_Offset: {x: 0, y: 0}
+  m_Size: {x: 1.4375, y: 2.125}
+  m_Direction: 0
 --- !u!50 &4224518652103963605
 Rigidbody2D:
   serializedVersion: 4
@@ -901,6 +943,27 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+--- !u!95 &4074004169480407381
+Animator:
+  serializedVersion: 5
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7897027907261389797}
+  m_Enabled: 0
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 8162733643f9d144a984060a2e62f3e2, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
 --- !u!1001 &1902533463209719951
 PrefabInstance:
   m_ObjectHideFlags: 0
