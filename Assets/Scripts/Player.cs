@@ -30,16 +30,16 @@ public class Player : MonoBehaviour
     [SerializeField] protected static float fart_duration = 2f;
     [SerializeField] protected static float fart_grav_scale = .1f;
     [SerializeField] protected static float max_fart = 100f;
-    
+
     //[SerializeField] protected float scaleChange = .02f; // 50 jumps = double size
     [SerializeField] protected float ticklePower = 10f;
     [SerializeField] protected float tickleMultiplier = 4f; // how much tickle power influences tickle meter filling up
 
-    [SerializeField] protected float fartPower = 200f;    
+    [SerializeField] protected float fartPower = 200f;
     [SerializeField] protected float tickleMeter = 0f;
     [SerializeField] protected float fartMeter = 0f;
-    
-    
+
+
 
     // Start is called before the first frame update
     void Start()
@@ -51,7 +51,7 @@ public class Player : MonoBehaviour
 
         handle_fart = Farting(fart_duration);
         handle_tickle_cd = TickleCD(tickle_cooldown);
-        
+
         tickleMeter = 0;
         fartMeter = 0;
         fartBar.fillAmount = 0;
@@ -84,11 +84,11 @@ public class Player : MonoBehaviour
     public void OnCollect(Collectable obj)
     {
         // only eat if meter not full
-        if(alive && fartMeter < 100)
+        if (alive && fartMeter < 100)
         {
             //Debug.Log("collected object " + obj.obj_name);
             UpdateFartMeter(obj.value);
-            Object.Destroy(obj.gameObject);
+            // Collectable handles Destroy
         }
     }
 
@@ -111,9 +111,9 @@ public class Player : MonoBehaviour
                 Vector2 diff = new Vector2(transform.position.x, transform.position.y) - hit.point;
                 //Debug.Log("point: " + hit.point + " => " + diff);
                 diff.Normalize();
-                
+
                 body.velocity = Vector3.zero; // zero out velocity (tweak this for jump feel)
-                
+
                 body.AddForce(diff * ticklePower, ForceMode2D.Impulse);
             }
 
@@ -139,13 +139,14 @@ public class Player : MonoBehaviour
         if (fartMeter == 100)
         {
             //Debug.Log("right click to fart");
-            
+
             // handle timer for fart duration
             //StopCoroutine(handle_fart);
             StartCoroutine(handle_fart);
             handle_fart = Farting(fart_duration); // reset the iterator
         }
-        else {
+        else
+        {
             Debug.Log("WARNING: Tried to fart with not enough gas.");
         }
     }
@@ -153,7 +154,7 @@ public class Player : MonoBehaviour
     protected IEnumerator Farting(float val)
     {
         //Debug.Log("Start Farting");
-        
+
         farting = true;
         body.gravityScale = fart_grav_scale;
         fart_sprite.SetActive(true);
@@ -163,11 +164,11 @@ public class Player : MonoBehaviour
         //StartCoroutine(Camera.main.GetComponent<CameraManager>().Shake(2f, .1f));
         Camera.main.GetComponent<CameraManager>().shaking = true;
         //float elapsed = 0f;
-        
+
         while (fartMeter > 0)
         {
             // reduce fart meter to 0 over 2 seconds
-            fartMeter = Mathf.Max (fartMeter - .25f, 0);
+            fartMeter = Mathf.Max(fartMeter - .25f, 0);
             //transform.localScale = Vector3.one * (fartMeter/100 + 1);
             fartBar.fillAmount = fartMeter / 100;
 
@@ -177,9 +178,9 @@ public class Player : MonoBehaviour
             //Debug.Log("point: " + hit.point + " => " + diff);
             diff.Normalize();
 
-            float angle = Mathf.Atan2(diff.y,diff.x) * Mathf.Rad2Deg;
+            float angle = Mathf.Atan2(diff.y, diff.x) * Mathf.Rad2Deg;
             transform.rotation = Quaternion.AngleAxis(angle, Vector3.forward);
-            
+
             body.velocity = Vector3.zero; // zero out velocity (tweak this for jump feel)
             body.AddForce(diff * fartPower);
 
@@ -202,8 +203,8 @@ public class Player : MonoBehaviour
 
         canTickle = false;
         body.gravityScale = fart_grav_scale;
-        
-        for(int i = 0; i < 5; i++)
+
+        for (int i = 0; i < 5; i++)
         {
             body.velocity *= .8f;
             yield return new WaitForSeconds(.05f);
@@ -212,7 +213,7 @@ public class Player : MonoBehaviour
         body.velocity = Vector2.zero;
 
         yield return new WaitForSeconds(.25f);
-        
+
         canTickle = true;
         body.gravityScale = 1;
     }
@@ -250,7 +251,8 @@ public class Player : MonoBehaviour
     // ..
     // HandleDeath() -- what happens when player dies
     // ..
-    protected void HandleDeath(){
+    protected void HandleDeath()
+    {
         Debug.Log("DIE");
         alive = false;
         body.gravityScale = 1f;
@@ -268,7 +270,7 @@ public class Player : MonoBehaviour
         if (alive)
         {
             spriteRenderer.sprite = nervous_sprite;
-        }   
+        }
 
         // on right click
         if (Input.GetMouseButtonDown(0))
@@ -283,7 +285,7 @@ public class Player : MonoBehaviour
         }
     }
 
-    
+
     // ..
     // when mouse exits collider
     // ..
@@ -304,5 +306,5 @@ public class Player : MonoBehaviour
             transform.rotation = Quaternion.identity;
         }
     }
-    
+
 }
