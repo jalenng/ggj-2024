@@ -135,8 +135,8 @@ public class Player : MonoBehaviour
             Vector2 point2 = new Vector2(transform.position.x + col.size.x/2, transform.position.y - col.size.y/2);
             RaycastHit2D hit2 = Physics2D.Raycast(point2, Vector2.down, 1f, groundmask);
 
-            Debug.Log(col.size.x + ", " + col.size.y);
-            Debug.Log(point);
+            //Debug.Log(col.size.x + ", " + col.size.y);
+            //Debug.Log(point);
 
             if ((hit.collider && hit.distance <= 0.1f) || (hit2.collider && hit2.distance <= 0.1f))
             {
@@ -149,7 +149,7 @@ public class Player : MonoBehaviour
     void Ground()
     {
         grounded = true;
-        Debug.Log(":GROUND");
+        //Debug.Log(":GROUND");
 
         body.velocity = Vector2.zero;
         transform.rotation = Quaternion.identity;
