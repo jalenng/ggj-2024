@@ -17,19 +17,27 @@ public class Player : MonoBehaviour
     [SerializeField] protected Image fartBar;
     [SerializeField] protected Image tickleBar;
 
-    public IEnumerator handle_fart;
+    IEnumerator handle_fart;
+    IEnumerator handle_tickle_cd;
+
     [SerializeField] protected bool alive = true;
     [SerializeField] protected bool farting = true;
-    [SerializeField] protected float ticklePower = 4f;
+    [SerializeField] protected bool canTickle = true;
+    [SerializeField] protected bool activeFarting = false;
+
+    [SerializeField] protected static float tickle_cooldown = .5f;
+    [SerializeField] protected static float tickle_grav_scale = 0f;
+    [SerializeField] protected static float fart_duration = 2f;
+    [SerializeField] protected static float fart_grav_scale = .1f;
+    [SerializeField] protected static float max_fart = 100f;
+    
+    //[SerializeField] protected float scaleChange = .02f; // 50 jumps = double size
+    [SerializeField] protected float ticklePower = 10f;
+    [SerializeField] protected float tickleMultiplier = 4f; // how much tickle power influences tickle meter filling up
 
     [SerializeField] protected float fartPower = 300f;    
-    [SerializeField] protected float fart_duration = 2f;
-    [SerializeField] protected float grav_scale = .1f;
-    //[SerializeField] protected float scaleChange = .02f; // 50 jumps = double size
-
     [SerializeField] protected float tickleMeter = 0f;
     [SerializeField] protected float fartMeter = 0f;
-    [SerializeField] protected static float max_fart = 100f;
     
     
 
@@ -42,6 +50,7 @@ public class Player : MonoBehaviour
         farting = false;
 
         handle_fart = Farting(fart_duration);
+        handle_tickle_cd = TickleCD(tickle_cooldown);
         
         tickleMeter = 0;
         fartMeter = 0;
@@ -67,10 +76,10 @@ public class Player : MonoBehaviour
         }
 
         // reduce fart meter to 0 over 2 seconds
-        if (farting && transform.localScale.x > 1)
+        if (farting)// && transform.localScale.x > 1)
         {
             fartMeter = Mathf.Max (fartMeter - 1f, 0);
-            transform.localScale = Vector3.one * (fartMeter/100 + 1);
+            //transform.localScale = Vector3.one * (fartMeter/100 + 1);
             fartBar.fillAmount = fartMeter / 100;
 
 
@@ -82,6 +91,9 @@ public class Player : MonoBehaviour
                 Vector2 diff = new Vector2(transform.position.x, transform.position.y) - hit.point;
                 //Debug.Log("point: " + hit.point + " => " + diff);
                 diff.Normalize();
+
+                float angle = Mathf.Atan2(diff.y,diff.x) * Mathf.Rad2Deg;
+                transform.rotation = Quaternion.AngleAxis(angle, Vector3.forward);
                 
                 body.velocity = Vector3.zero; // zero out velocity (tweak this for jump feel)
                 
@@ -97,7 +109,8 @@ public class Player : MonoBehaviour
     // ..
     public void OnCollect(Collectable obj)
     {
-        if(alive)
+        // only eat if meter not full
+        if(alive && fartMeter < 100)
         {
             //Debug.Log("collected object " + obj.obj_name);
             UpdateFartMeter(obj.value);
@@ -111,8 +124,8 @@ public class Player : MonoBehaviour
     // .. 
     protected void OnTickle()
     {
-        // disable tickling while farting
-        if (!farting)
+        // disable tickling while farting or recent tickle
+        if (!farting && canTickle)
         {
             //Debug.Log("click on object");
 
@@ -136,8 +149,10 @@ public class Player : MonoBehaviour
             {
                 spriteRenderer.sprite = nervous_sprite;
                 UpdateFartMeter(ticklePower);
-                UpdateTickleMeter(ticklePower * 5);
+                UpdateTickleMeter(ticklePower * tickleMultiplier);
             }
+
+            StartCoroutine(handle_tickle_cd);
         }
     }
 
@@ -154,10 +169,11 @@ public class Player : MonoBehaviour
             //
             // TO IMPLEMENT --- 
             farting = true;
-            body.gravityScale = grav_scale;
+            body.gravityScale = fart_grav_scale;
             fart_sprite.SetActive(true);
             spriteRenderer.sprite = nervous_sprite;
 
+            StartCoroutine(Camera.main.GetComponent<CameraManager>().Shake(2f, .2f));
 
             // handle timer for fart duration
             StopCoroutine(handle_fart);
@@ -171,6 +187,9 @@ public class Player : MonoBehaviour
     protected IEnumerator Farting(float val)
     {
         //Debug.Log("Start Farting");
+
+        // reset the iterator
+        handle_fart = Farting(fart_duration);
         
         yield return new WaitForSeconds(val);
         
@@ -179,8 +198,28 @@ public class Player : MonoBehaviour
         body.gravityScale = 1;
         fart_sprite.SetActive(false);
 
-        // reset the iterator
-        handle_fart = Farting(fart_duration);
+    }
+
+    protected IEnumerator TickleCD(float cd)
+    {
+        // reset iterator
+        handle_tickle_cd = TickleCD(tickle_cooldown);
+
+        canTickle = false;
+        body.gravityScale = fart_grav_scale;
+        
+        for(int i = 0; i < 5; i++)
+        {
+            body.velocity *= .8f;
+            yield return new WaitForSeconds(.05f);
+        }
+
+        body.velocity = Vector2.zero;
+
+        yield return new WaitForSeconds(.25f);
+        
+        canTickle = true;
+        body.gravityScale = 1;
     }
 
 
@@ -192,14 +231,13 @@ public class Player : MonoBehaviour
         if (fartMeter < 100)
         {
             fartMeter = Mathf.Min(fartMeter + val, max_fart);
-            //transform.localScale += Vector3.one * val *  scaleChange;
-            transform.localScale = Vector3.one * (fartMeter/100 + 1);
+            //transform.localScale = Vector3.one * (fartMeter/100 + 1);
             fartBar.fillAmount = fartMeter / 100;
         }
 
 
         // Automatic Fart
-        if (fartMeter >= 100)
+        if (!activeFarting && fartMeter >= 100)
             OnFart();
     }
 
@@ -220,7 +258,7 @@ public class Player : MonoBehaviour
     protected void HandleDeath(){
         Debug.Log("DIE");
         alive = false;
-        OnFart();
+        //OnFart();
         spriteRenderer.sprite = default_sprite;
     }
 
@@ -241,11 +279,12 @@ public class Player : MonoBehaviour
         {
             OnTickle();
         }
+
         // on left click
-        // if (Input.GetMouseButtonDown(1))
-        // {
-        //     OnFart();
-        // }
+        if (Input.GetMouseButtonDown(1) && activeFarting)
+        {
+            OnFart();
+        }
     }
 
     
