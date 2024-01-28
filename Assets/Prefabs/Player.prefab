@@ -958,10 +958,6 @@ PrefabInstance:
       value: Fart Emitter
       objectReference: {fileID: 0}
     - target: {fileID: 6051949360467297687, guid: 96c637e801d1974458d5900317f525ca, type: 3}
-      propertyPath: m_LocalPosition.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6051949360467297687, guid: 96c637e801d1974458d5900317f525ca, type: 3}
       propertyPath: m_LocalPosition.y
       value: 0
       objectReference: {fileID: 0}

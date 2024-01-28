@@ -11,7 +11,7 @@ public class Player : MonoBehaviour
     protected AudioSource audioSource;
     protected BoxCollider2D col;
 
-    [SerializeField] protected GameObject fart_sprite;
+    [SerializeField] protected GameObject fart_emitter;
 
     [SerializeField] protected Sprite default_sprite;
     [SerializeField] protected Sprite nervous_sprite;
@@ -96,7 +96,7 @@ public class Player : MonoBehaviour
                     fartMeter = Mathf.Max(fartMeter - 1f, 0);
                     fartBar.fillAmount = fartMeter / 100;
                     UpdateSprite();
-                    
+
                     Vector2 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
                     Vector2 diff = new Vector2(transform.position.x, transform.position.y) - mousePos;
                     diff.Normalize();
@@ -113,10 +113,10 @@ public class Player : MonoBehaviour
                 }
             }
         }
-        else if(fartMeter > 0)
+        else if (fartMeter > 0)
         {
             // reduce fart meter to 0 over 2 seconds
-            fartMeter = Mathf.Max (fartMeter - 1f, 0);
+            fartMeter = Mathf.Max(fartMeter - 1f, 0);
             fartBar.fillAmount = fartMeter / 100;
 
             UpdateSprite();
@@ -170,7 +170,7 @@ public class Player : MonoBehaviour
                 if (fartMeter == 100)
                     HandleDeath();
                 //spriteRenderer.sprite = nervous_sprite;
-                UpdateFartMeter(100/numJumps);
+                UpdateFartMeter(100 / numJumps);
                 //UpdateTickleMeter(ticklePower * tickleMultiplier);
                 //UpdateTickleMeter(100/numJumps);
             }
@@ -193,7 +193,7 @@ public class Player : MonoBehaviour
             //StopCoroutine(handle_fart);
             farting = true;
             body.gravityScale = fart_grav_scale;
-            fart_sprite.SetActive(true);
+            // fart_emitter.SetActive(true);
 
             //spriteRenderer.sprite = nervous_sprite;
 
@@ -202,7 +202,8 @@ public class Player : MonoBehaviour
             //Camera.main.GetComponent<CameraManager>().shaking = true;
             ProCamera2DShake camshake = Camera.main.GetComponent<ProCamera2DShake>();
             camshake.ConstantShake(camshake.ConstantShakePresets[2]);
-            fart_sprite.GetComponent<Animator>().SetBool("Farting",true);
+            // fart_emitter.GetComponent<Animator>().SetBool("Farting",true);
+            fart_emitter.GetComponent<ParticleSystem>().Play();
             // Handle SFX
             int randIdx = Random.Range(0, fartAudioClips.Count);
             audioSource.clip = fartAudioClips[randIdx];
@@ -224,11 +225,12 @@ public class Player : MonoBehaviour
     {
         //Camera.main.GetComponent<CameraManager>().shaking = false;
         //Debug.Log("Finish Farting");
-        fart_sprite.GetComponent<Animator>().SetBool("Farting",false);
+        // fart_emitter.GetComponent<Animator>().SetBool("Farting",false);
+        fart_emitter.GetComponent<ParticleSystem>().Stop();
         farting = false;
         body.gravityScale = 1;
         body.velocity = Vector2.zero;
-        //fart_sprite.SetActive(false);
+        //fart_emitter.SetActive(false);
         audioSource.Stop();
 
     }
@@ -255,7 +257,7 @@ public class Player : MonoBehaviour
         body.gravityScale = 1;
     }
 
-     protected void UpdateSprite()
+    protected void UpdateSprite()
     {
         // fml
         // if (fartMeter < 10)
@@ -276,8 +278,8 @@ public class Player : MonoBehaviour
         //     spriteRenderer.sprite = sprite_sizes[7];
         // else
         //     spriteRenderer.sprite = sprite_sizes[8];
-        
-        spriteRenderer.sprite = sprite_sizes[ (int)Mathf.Min(fartMeter / 10f, 8f)];
+
+        spriteRenderer.sprite = sprite_sizes[(int)Mathf.Min(fartMeter / 10f, 8f)];
 
         // change collider size based on sprite size
         col.size = spriteRenderer.bounds.size;
