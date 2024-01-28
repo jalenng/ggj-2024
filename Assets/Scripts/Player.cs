@@ -109,7 +109,8 @@ public class Player : MonoBehaviour
     // ..
     public void OnCollect(Collectable obj)
     {
-        if(alive)
+        // only eat if meter not full
+        if(alive && fartMeter < 100)
         {
             //Debug.Log("collected object " + obj.obj_name);
             UpdateFartMeter(obj.value);
@@ -172,6 +173,7 @@ public class Player : MonoBehaviour
             fart_sprite.SetActive(true);
             spriteRenderer.sprite = nervous_sprite;
 
+            StartCoroutine(Camera.main.GetComponent<CameraManager>().Shake(2f, .2f));
 
             // handle timer for fart duration
             StopCoroutine(handle_fart);
