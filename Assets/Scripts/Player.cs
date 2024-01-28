@@ -9,11 +9,13 @@ public class Player : MonoBehaviour
     protected SpriteRenderer spriteRenderer;
     protected Rigidbody2D body;
     protected AudioSource audioSource;
+    protected BoxCollider2D col;
 
     [SerializeField] protected GameObject fart_sprite;
 
     [SerializeField] protected Sprite default_sprite;
     [SerializeField] protected Sprite nervous_sprite;
+    [SerializeField] protected Sprite[] sprite_sizes;
     //[SerializeField] protected Sprite laughing_sprite;
 
     [SerializeField] protected Image fartBar;
@@ -37,6 +39,8 @@ public class Player : MonoBehaviour
     [SerializeField] protected float ticklePower = 10f;
     [SerializeField] protected float tickleMultiplier = 4f; // how much tickle power influences tickle meter filling up
 
+    public float numJumps = 3f;
+    public float numFarts = 1f;
     [SerializeField] protected float fartPower = 200f;
     [SerializeField] protected float tickleMeter = 0f;
     [SerializeField] protected float fartMeter = 0f;
@@ -51,12 +55,14 @@ public class Player : MonoBehaviour
         spriteRenderer = this.GetComponent<SpriteRenderer>();
         body = this.GetComponent<Rigidbody2D>();
         audioSource = this.GetComponent<AudioSource>();
+        col = this.GetComponent<BoxCollider2D>();
         alive = true;
         farting = false;
 
         //handle_fart = Farting(fart_duration);
         handle_tickle_cd = TickleCD(tickle_cooldown);
 
+        numFarts = 1f;
         tickleMeter = 0;
         fartMeter = 0;
         fartBar.fillAmount = 0;
@@ -70,16 +76,16 @@ public class Player : MonoBehaviour
     {
         if (alive)
         {
-            if (tickleMeter > 0)
-            {
-                tickleMeter -= 1f;
-                tickleBar.fillAmount = tickleMeter / 100;
-            }
+            // if (tickleMeter > 0)
+            // {
+            //     tickleMeter -= 1f;
+            //     tickleBar.fillAmount = tickleMeter / 100;
+            // }
 
-            if (tickleMeter > 100)
-            {
-                HandleDeath();
-            }
+            // if (tickleMeter > 100)
+            // {
+            //     HandleDeath();
+            // }
 
             if (farting)
             {
@@ -89,8 +95,8 @@ public class Player : MonoBehaviour
                     // reduce fart meter to 0 over 2 seconds
                     fartMeter = Mathf.Max(fartMeter - 1f, 0);
                     fartBar.fillAmount = fartMeter / 100;
-                    // update sprite here ------------
-
+                    UpdateSprite();
+                    
                     Vector2 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
                     Vector2 diff = new Vector2(transform.position.x, transform.position.y) - mousePos;
                     diff.Normalize();
@@ -106,6 +112,14 @@ public class Player : MonoBehaviour
                     EndFart();
                 }
             }
+        }
+        else if(fartMeter > 0)
+        {
+            // reduce fart meter to 0 over 2 seconds
+            fartMeter = Mathf.Max (fartMeter - 1f, 0);
+            fartBar.fillAmount = fartMeter / 100;
+
+            UpdateSprite();
         }
     }
 
@@ -153,9 +167,12 @@ public class Player : MonoBehaviour
             //transform.localScale += Vector3.one * scaleChange;
             if (alive)
             {
-                spriteRenderer.sprite = nervous_sprite;
-                UpdateFartMeter(ticklePower);
-                UpdateTickleMeter(ticklePower * tickleMultiplier);
+                if (fartMeter == 100)
+                    HandleDeath();
+                //spriteRenderer.sprite = nervous_sprite;
+                UpdateFartMeter(100/numJumps);
+                //UpdateTickleMeter(ticklePower * tickleMultiplier);
+                //UpdateTickleMeter(100/numJumps);
             }
 
             StartCoroutine(handle_tickle_cd);
@@ -177,7 +194,8 @@ public class Player : MonoBehaviour
             farting = true;
             body.gravityScale = fart_grav_scale;
             fart_sprite.SetActive(true);
-            spriteRenderer.sprite = nervous_sprite;
+
+            //spriteRenderer.sprite = nervous_sprite;
 
             // camera shake
             //StartCoroutine(Camera.main.GetComponent<CameraManager>().Shake(2f, .1f));
@@ -237,6 +255,34 @@ public class Player : MonoBehaviour
         body.gravityScale = 1;
     }
 
+     protected void UpdateSprite()
+    {
+        // fml
+        // if (fartMeter < 10)
+        //     spriteRenderer.sprite = sprite_sizes[0];
+        // else if (fartMeter < 20)
+        //     spriteRenderer.sprite = sprite_sizes[1];
+        // else if (fartMeter < 30)
+        //     spriteRenderer.sprite = sprite_sizes[2];
+        // else if (fartMeter < 40)
+        //     spriteRenderer.sprite = sprite_sizes[3];
+        // else if (fartMeter < 50)
+        //     spriteRenderer.sprite = sprite_sizes[4];
+        // else if (fartMeter < 60)
+        //     spriteRenderer.sprite = sprite_sizes[5];
+        // else if (fartMeter < 70)
+        //     spriteRenderer.sprite = sprite_sizes[6];
+        // else if (fartMeter < 80)
+        //     spriteRenderer.sprite = sprite_sizes[7];
+        // else
+        //     spriteRenderer.sprite = sprite_sizes[8];
+        
+        spriteRenderer.sprite = sprite_sizes[ (int)Mathf.Min(fartMeter / 10f, 8f)];
+
+        // change collider size based on sprite size
+        col.size = spriteRenderer.bounds.size;
+    }
+
 
     // ..
     // UpdateFartMeter() -- update fart bar and meter vals
@@ -248,6 +294,8 @@ public class Player : MonoBehaviour
             fartMeter = Mathf.Min(fartMeter + val, max_fart);
             //transform.localScale = Vector3.one * (fartMeter/100 + 1);
             fartBar.fillAmount = fartMeter / 100;
+
+            UpdateSprite();
         }
 
 
@@ -276,7 +324,10 @@ public class Player : MonoBehaviour
         alive = false;
         body.gravityScale = 1f;
         //OnFart();
-        spriteRenderer.sprite = default_sprite;
+        //spriteRenderer.sprite = default_sprite;
+
+        // TEMP change color to indicate death
+        spriteRenderer.color = new Color(204f, 241f, 142f, 1f);
     }
 
 
@@ -286,7 +337,7 @@ public class Player : MonoBehaviour
     void OnMouseOver()
     {
         // change animation when mouse is hovering over player
-        if (alive)
+        if (alive && fartMeter < 10)
         {
             spriteRenderer.sprite = nervous_sprite;
         }
@@ -311,7 +362,7 @@ public class Player : MonoBehaviour
     void OnMouseExit()
     {
         // change sprite
-        if (!farting)
+        if (!farting && fartMeter < 10)
             this.spriteRenderer.sprite = default_sprite;
     }
 
@@ -324,6 +375,8 @@ public class Player : MonoBehaviour
             transform.rotation = Quaternion.identity;
             fartMeter = 0;
             fartBar.fillAmount = 0;
+            UpdateSprite();
+
             EndFart();
         }
     }
@@ -336,6 +389,8 @@ public class Player : MonoBehaviour
             transform.rotation = Quaternion.identity;
             fartMeter = 0;
             fartBar.fillAmount = 0;
+            UpdateSprite();
+
             EndFart();
         }
     }
