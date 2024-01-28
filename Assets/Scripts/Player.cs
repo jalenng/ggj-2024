@@ -7,6 +7,7 @@ using Com.LuisPedroFonseca.ProCamera2D;
 public class Player : MonoBehaviour
 {
     protected SpriteRenderer spriteRenderer;
+    [SerializeField] protected Image fart_indicator;
     protected Rigidbody2D body;
     protected AudioSource audioSource;
     protected CapsuleCollider2D col;
@@ -154,11 +155,17 @@ public class Player : MonoBehaviour
         body.velocity = Vector2.zero;
         transform.rotation = Quaternion.identity;
 
-        deflate_rate = 10f;
+        deflate_rate = 20f;
         deflating = true;
+        
         if (farting)
             EndFart();
+
         numFarts = 1;
+        
+        Color temp = fart_indicator.color;
+        temp.a = 1f;
+        fart_indicator.color = temp;
 
     }
 
@@ -168,13 +175,17 @@ public class Player : MonoBehaviour
     public void OnCollect(Collectable obj)
     {
         // only eat if meter not full
-        if (alive && fartMeter < 100)
+        if (alive)
         {
             //Debug.Log("collected object " + obj.obj_name);
             UpdateFartMeter(obj.value);
             UpdateSprite();
 
             numFarts = 1;
+            
+            Color temp = fart_indicator.color;
+            temp.a = 1f;
+            fart_indicator.color = temp;
             // Collectable handles Destroy
         }
     }
@@ -241,7 +252,7 @@ public class Player : MonoBehaviour
     public void OnFart(bool overrideCheck = false)
     {
         //if (fartMeter == 100)
-        if (overrideCheck || numFarts > 0)
+        if (overrideCheck || (numFarts > 0 && fartMeter > 0) && !farting)
         {
             //Debug.Log("right click to fart");
             // handle timer for fart duration
@@ -250,6 +261,7 @@ public class Player : MonoBehaviour
             deflate_rate = 1f;
             deflating = true;
             body.gravityScale = fart_grav_scale;
+
             // fart_emitter.SetActive(true);
 
             //spriteRenderer.sprite = nervous_sprite;
@@ -291,6 +303,10 @@ public class Player : MonoBehaviour
         audioSource.Stop();
 
         numFarts = 0;
+
+        Color temp = fart_indicator.color;
+        temp.a = 0.5f;
+        fart_indicator.color = temp;
     }
 
     protected IEnumerator TickleCD(float cd)
@@ -323,7 +339,7 @@ public class Player : MonoBehaviour
         spriteRenderer.sprite = sprite_sizes[ (int)Mathf.Min(fartMeter / 10f, 8f)];
 
         // change collider size based on sprite size
-        col.size = spriteRenderer.bounds.size;
+        //col.size = spriteRenderer.bounds.size;
     }
 
 
