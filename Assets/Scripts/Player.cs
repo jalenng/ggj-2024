@@ -17,7 +17,7 @@ public class Player : MonoBehaviour
     [SerializeField] protected Image fartBar;
     [SerializeField] protected Image tickleBar;
 
-    IEnumerator handle_fart;
+    //IEnumerator handle_fart;
     IEnumerator handle_tickle_cd;
 
     [SerializeField] protected bool alive = true;
@@ -49,7 +49,7 @@ public class Player : MonoBehaviour
         alive = true;
         farting = false;
 
-        handle_fart = Farting(fart_duration);
+        //handle_fart = Farting(fart_duration);
         handle_tickle_cd = TickleCD(tickle_cooldown);
 
         tickleMeter = 0;
@@ -63,18 +63,45 @@ public class Player : MonoBehaviour
     // Update is called once per frame
     void FixedUpdate()
     {
-        if (tickleMeter > 0)
+        if (alive)
         {
-            tickleMeter -= 1f;
-            tickleBar.fillAmount = tickleMeter / 100;
+            if (tickleMeter > 0)
+            {
+                tickleMeter -= 1f;
+                tickleBar.fillAmount = tickleMeter / 100;
+            }
+
+            if (tickleMeter > 100)
+            {
+                HandleDeath();
+            }
+
+            if (farting)
+            {
+                if(fartMeter > 0)
+                {
+                        
+                    // reduce fart meter to 0 over 2 seconds
+                    fartMeter = Mathf.Max (fartMeter - 1f, 0);
+                    fartBar.fillAmount = fartMeter / 100;
+                    // update sprite here ------------
+
+                    Vector2 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+                    Vector2 diff = new Vector2(transform.position.x, transform.position.y) - mousePos;
+                    diff.Normalize();
+
+                    float angle = Mathf.Atan2(diff.y,diff.x) * Mathf.Rad2Deg;
+                    transform.rotation = Quaternion.AngleAxis(angle, Vector3.forward);
+                    
+                    body.velocity = Vector3.zero; // zero out velocity (tweak this for jump feel)
+                    body.AddForce(diff * fartPower);
+                }
+                else 
+                {
+                    EndFart();
+                }
+            }
         }
-
-        if (tickleMeter > 100)
-        {
-            HandleDeath();
-
-        }
-
     }
 
 
@@ -142,8 +169,17 @@ public class Player : MonoBehaviour
 
             // handle timer for fart duration
             //StopCoroutine(handle_fart);
-            StartCoroutine(handle_fart);
-            handle_fart = Farting(fart_duration); // reset the iterator
+            farting = true;
+            body.gravityScale = fart_grav_scale;
+            fart_sprite.SetActive(true);
+            spriteRenderer.sprite = nervous_sprite;
+
+            // camera shake
+            //StartCoroutine(Camera.main.GetComponent<CameraManager>().Shake(2f, .1f));
+            Camera.main.GetComponent<CameraManager>().shaking = true;    
+            
+            //StartCoroutine(handle_fart);
+            //handle_fart = Farting(fart_duration); // reset the iterator
         }
         else
         {
@@ -151,42 +187,9 @@ public class Player : MonoBehaviour
         }
     }
 
-    protected IEnumerator Farting(float val)
+    //protected IEnumerator Farting(float val)
+    protected void EndFart()
     {
-        //Debug.Log("Start Farting");
-
-        farting = true;
-        body.gravityScale = fart_grav_scale;
-        fart_sprite.SetActive(true);
-        spriteRenderer.sprite = nervous_sprite;
-
-        // camera shake
-        //StartCoroutine(Camera.main.GetComponent<CameraManager>().Shake(2f, .1f));
-        Camera.main.GetComponent<CameraManager>().shaking = true;
-        //float elapsed = 0f;
-
-        while (fartMeter > 0)
-        {
-            // reduce fart meter to 0 over 2 seconds
-            fartMeter = Mathf.Max(fartMeter - .25f, 0);
-            //transform.localScale = Vector3.one * (fartMeter/100 + 1);
-            fartBar.fillAmount = fartMeter / 100;
-
-            // continuous raycast for automatic movement during fart
-            Vector2 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-            Vector2 diff = new Vector2(transform.position.x, transform.position.y) - mousePos;
-            //Debug.Log("point: " + hit.point + " => " + diff);
-            diff.Normalize();
-
-            float angle = Mathf.Atan2(diff.y, diff.x) * Mathf.Rad2Deg;
-            transform.rotation = Quaternion.AngleAxis(angle, Vector3.forward);
-
-            body.velocity = Vector3.zero; // zero out velocity (tweak this for jump feel)
-            body.AddForce(diff * fartPower);
-
-            yield return new WaitForSeconds(0);
-        }
-
         Camera.main.GetComponent<CameraManager>().shaking = false;
         //Debug.Log("Finish Farting");        
         farting = false;
@@ -299,11 +302,25 @@ public class Player : MonoBehaviour
 
     void OnCollisionEnter2D(Collision2D col)
     {
-        if (col.gameObject.tag == "Ground")
+        if (body.velocity.y < 0)
         {
             body.velocity = Vector2.zero;
-
             transform.rotation = Quaternion.identity;
+            fartMeter = 0;
+            fartBar.fillAmount = 0;
+            EndFart();
+        }
+    }
+
+    void OnCollisionStay2D(Collision2D col)
+    {
+        if (body.velocity.y < 0)
+        {
+            body.velocity = Vector2.zero;
+            transform.rotation = Quaternion.identity;
+            fartMeter = 0;
+            fartBar.fillAmount = 0;
+            EndFart();
         }
     }
 

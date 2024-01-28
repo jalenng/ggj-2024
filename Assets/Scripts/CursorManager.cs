@@ -6,14 +6,16 @@ public class CursorManager : MonoBehaviour
 {
 
     // default cursor (feather)
-    public static Texture2D cursor1;
+    public Texture2D cursor1;
+    public Texture2D cursor2;
     
     // offset for cursor focus point (top left corner)
-    public static Vector2 offset = Vector2.zero;
+    public Vector2 offset = Vector2.zero;
 
     void Awake()
     {
-        cursor1 = Resources.Load("feather_cursor.png") as Texture2D;
+        cursor1 = Resources.Load("feather1") as Texture2D;
+        cursor2 = Resources.Load("feather2") as Texture2D;
     }
     // Start is called before the first frame update
     void Start()

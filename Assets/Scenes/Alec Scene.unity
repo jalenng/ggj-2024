@@ -167,6 +167,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d79d03176fd08ae45a118ac80601369d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  cursor1: {fileID: 0}
+  cursor2: {fileID: 0}
+  offset: {x: 0, y: 0}
 --- !u!1 &728614599
 GameObject:
   m_ObjectHideFlags: 0
@@ -856,41 +859,9 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 2827612153769828193, guid: 9a33b60478f6e90488e1930a475a8e21, type: 3}
-      propertyPath: m_SortingOrder
-      value: 1
-      objectReference: {fileID: 0}
     - target: {fileID: 5013619929877278128, guid: 9a33b60478f6e90488e1930a475a8e21, type: 3}
       propertyPath: m_Name
       value: Player
-      objectReference: {fileID: 0}
-    - target: {fileID: 6328157924185786436, guid: 9a33b60478f6e90488e1930a475a8e21, type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 6328157924185786436, guid: 9a33b60478f6e90488e1930a475a8e21, type: 3}
-      propertyPath: m_LocalRotation.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6328157924185786436, guid: 9a33b60478f6e90488e1930a475a8e21, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 7405850454260302260, guid: 9a33b60478f6e90488e1930a475a8e21, type: 3}
-      propertyPath: fartMeter
-      value: 100
-      objectReference: {fileID: 0}
-    - target: {fileID: 7405850454260302260, guid: 9a33b60478f6e90488e1930a475a8e21, type: 3}
-      propertyPath: fartPower
-      value: 100
-      objectReference: {fileID: 0}
-    - target: {fileID: 7405850454260302260, guid: 9a33b60478f6e90488e1930a475a8e21, type: 3}
-      propertyPath: activeFarting
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 8315882186909870384, guid: 9a33b60478f6e90488e1930a475a8e21, type: 3}
-      propertyPath: m_SortingOrder
-      value: 2
       objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: 3469492529913103842, guid: 9a33b60478f6e90488e1930a475a8e21, type: 3}
