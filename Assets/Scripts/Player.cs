@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using Com.LuisPedroFonseca.ProCamera2D;
 
 public class Player : MonoBehaviour
 {
@@ -180,8 +181,10 @@ public class Player : MonoBehaviour
 
             // camera shake
             //StartCoroutine(Camera.main.GetComponent<CameraManager>().Shake(2f, .1f));
-            Camera.main.GetComponent<CameraManager>().shaking = true;
-
+            //Camera.main.GetComponent<CameraManager>().shaking = true;
+            ProCamera2DShake camshake = Camera.main.GetComponent<ProCamera2DShake>();
+            camshake.ConstantShake(camshake.ConstantShakePresets[2]);
+            fart_sprite.GetComponent<Animator>().SetBool("Farting",true);
             // Handle SFX
             int randIdx = Random.Range(0, fartAudioClips.Count);
             audioSource.clip = fartAudioClips[randIdx];
@@ -201,12 +204,13 @@ public class Player : MonoBehaviour
     //protected IEnumerator Farting(float val)
     protected void EndFart()
     {
-        Camera.main.GetComponent<CameraManager>().shaking = false;
-        //Debug.Log("Finish Farting");        
+        //Camera.main.GetComponent<CameraManager>().shaking = false;
+        //Debug.Log("Finish Farting");
+        fart_sprite.GetComponent<Animator>().SetBool("Farting",false);
         farting = false;
         body.gravityScale = 1;
         body.velocity = Vector2.zero;
-        fart_sprite.SetActive(false);
+        //fart_sprite.SetActive(false);
         audioSource.Stop();
 
     }
