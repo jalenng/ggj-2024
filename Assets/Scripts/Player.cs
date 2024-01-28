@@ -7,6 +7,7 @@ public class Player : MonoBehaviour
 {
     protected SpriteRenderer spriteRenderer;
     protected Rigidbody2D body;
+    protected AudioSource audioSource;
 
     [SerializeField] protected GameObject fart_sprite;
 
@@ -39,6 +40,8 @@ public class Player : MonoBehaviour
     [SerializeField] protected float tickleMeter = 0f;
     [SerializeField] protected float fartMeter = 0f;
 
+    // SFX
+    [SerializeField] protected List<AudioClip> fartAudioClips;
 
 
     // Start is called before the first frame update
@@ -46,6 +49,7 @@ public class Player : MonoBehaviour
     {
         spriteRenderer = this.GetComponent<SpriteRenderer>();
         body = this.GetComponent<Rigidbody2D>();
+        audioSource = this.GetComponent<AudioSource>();
         alive = true;
         farting = false;
 
@@ -78,11 +82,11 @@ public class Player : MonoBehaviour
 
             if (farting)
             {
-                if(fartMeter > 0)
+                if (fartMeter > 0)
                 {
-                        
+
                     // reduce fart meter to 0 over 2 seconds
-                    fartMeter = Mathf.Max (fartMeter - 1f, 0);
+                    fartMeter = Mathf.Max(fartMeter - 1f, 0);
                     fartBar.fillAmount = fartMeter / 100;
                     // update sprite here ------------
 
@@ -90,13 +94,13 @@ public class Player : MonoBehaviour
                     Vector2 diff = new Vector2(transform.position.x, transform.position.y) - mousePos;
                     diff.Normalize();
 
-                    float angle = Mathf.Atan2(diff.y,diff.x) * Mathf.Rad2Deg;
+                    float angle = Mathf.Atan2(diff.y, diff.x) * Mathf.Rad2Deg;
                     transform.rotation = Quaternion.AngleAxis(angle, Vector3.forward);
-                    
+
                     body.velocity = Vector3.zero; // zero out velocity (tweak this for jump feel)
                     body.AddForce(diff * fartPower);
                 }
-                else 
+                else
                 {
                     EndFart();
                 }
@@ -176,8 +180,15 @@ public class Player : MonoBehaviour
 
             // camera shake
             //StartCoroutine(Camera.main.GetComponent<CameraManager>().Shake(2f, .1f));
-            Camera.main.GetComponent<CameraManager>().shaking = true;    
-            
+            Camera.main.GetComponent<CameraManager>().shaking = true;
+
+            // Handle SFX
+            int randIdx = Random.Range(0, fartAudioClips.Count);
+            audioSource.clip = fartAudioClips[randIdx];
+            audioSource.pitch = Random.Range(0.8f, 1.2f);
+            audioSource.loop = true;
+            audioSource.Play();
+
             //StartCoroutine(handle_fart);
             //handle_fart = Farting(fart_duration); // reset the iterator
         }
@@ -196,6 +207,7 @@ public class Player : MonoBehaviour
         body.gravityScale = 1;
         body.velocity = Vector2.zero;
         fart_sprite.SetActive(false);
+        audioSource.Stop();
 
     }
 
