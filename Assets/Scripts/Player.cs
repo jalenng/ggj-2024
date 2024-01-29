@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using Com.LuisPedroFonseca.ProCamera2D;
+using UnityEngine.SceneManagement;
 
 public class Player : MonoBehaviour
 {
@@ -279,8 +280,11 @@ public class Player : MonoBehaviour
             // camera shake
             //StartCoroutine(Camera.main.GetComponent<CameraManager>().Shake(2f, .1f));
             //Camera.main.GetComponent<CameraManager>().shaking = true;
-            ProCamera2DShake camshake = Camera.main.GetComponent<ProCamera2DShake>();
-            camshake.ConstantShake(camshake.ConstantShakePresets[2]);
+            if (SceneManager.GetActiveScene() != SceneManager.GetSceneByName("MainMenu"))
+            {
+                ProCamera2DShake camshake = Camera.main.GetComponent<ProCamera2DShake>();
+                camshake.ConstantShake(camshake.ConstantShakePresets[2]);
+            }
             // fart_emitter.GetComponent<Animator>().SetBool("Farting",true);
             fart_emitter.GetComponent<ParticleSystem>().Play();
             // Handle SFX
