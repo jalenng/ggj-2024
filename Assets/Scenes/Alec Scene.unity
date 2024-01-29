@@ -701,6 +701,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Melk
       objectReference: {fileID: 0}
+    - target: {fileID: 5259514901763798327, guid: ae3579bd9cb5ca7479d9a15ddb834486, type: 3}
+      propertyPath: m_TagString
+      value: Collectable
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -725,6 +729,10 @@ PrefabInstance:
     - target: {fileID: 3263145694939461973, guid: 3fe3e74ccd8696a41a4f5e64da04f03f, type: 3}
       propertyPath: m_Name
       value: Beer
+      objectReference: {fileID: 0}
+    - target: {fileID: 3263145694939461973, guid: 3fe3e74ccd8696a41a4f5e64da04f03f, type: 3}
+      propertyPath: m_TagString
+      value: Collectable
       objectReference: {fileID: 0}
     - target: {fileID: 4186255775070249289, guid: 3fe3e74ccd8696a41a4f5e64da04f03f, type: 3}
       propertyPath: m_LocalPosition.x
@@ -823,6 +831,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Borgir
       objectReference: {fileID: 0}
+    - target: {fileID: 3600470991708991589, guid: c2fe1cf09b72ff44a8925777fa44bdb7, type: 3}
+      propertyPath: m_TagString
+      value: Collectable
+      objectReference: {fileID: 0}
     - target: {fileID: 4560457156350410289, guid: c2fe1cf09b72ff44a8925777fa44bdb7, type: 3}
       propertyPath: value
       value: 100
@@ -855,6 +867,10 @@ PrefabInstance:
     - target: {fileID: 6719772719042861388, guid: 88cf99caa8205d749b22b900b6b75855, type: 3}
       propertyPath: m_Name
       value: Cheese
+      objectReference: {fileID: 0}
+    - target: {fileID: 6719772719042861388, guid: 88cf99caa8205d749b22b900b6b75855, type: 3}
+      propertyPath: m_TagString
+      value: Collectable
       objectReference: {fileID: 0}
     - target: {fileID: 7187740116128126092, guid: 88cf99caa8205d749b22b900b6b75855, type: 3}
       propertyPath: m_LocalPosition.x
@@ -1029,6 +1045,10 @@ PrefabInstance:
     - target: {fileID: 6669458350928898875, guid: 0a22213f48f903341a3881a123e27c94, type: 3}
       propertyPath: m_Name
       value: Can of Beans
+      objectReference: {fileID: 0}
+    - target: {fileID: 6669458350928898875, guid: 0a22213f48f903341a3881a123e27c94, type: 3}
+      propertyPath: m_TagString
+      value: Collectable
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

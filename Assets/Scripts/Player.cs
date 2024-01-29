@@ -28,8 +28,10 @@ public class Player : MonoBehaviour
 
     //IEnumerator handle_fart;
     IEnumerator handle_tickle_cd;
+    Vector2 respawnPos;
+    public  bool alive = true;
 
-    [SerializeField] protected bool alive = true;
+    
     [SerializeField] protected bool farting = false;
     [SerializeField] protected bool deflating = false;
     [SerializeField] protected bool canTickle = true;
@@ -155,6 +157,8 @@ public class Player : MonoBehaviour
         body.velocity = Vector2.zero;
         transform.rotation = Quaternion.identity;
 
+        respawnPos = transform.position;
+
         deflate_rate = 20f;
         deflating = true;
         
@@ -264,6 +268,12 @@ public class Player : MonoBehaviour
 
             // fart_emitter.SetActive(true);
 
+            numFarts = 0;
+
+            Color temp = fart_indicator.color;
+            temp.a = 0.5f;
+            fart_indicator.color = temp;
+
             //spriteRenderer.sprite = nervous_sprite;
 
             // camera shake
@@ -301,12 +311,6 @@ public class Player : MonoBehaviour
         body.velocity = Vector2.zero;
         //fart_emitter.SetActive(false);
         audioSource.Stop();
-
-        numFarts = 0;
-
-        Color temp = fart_indicator.color;
-        temp.a = 0.5f;
-        fart_indicator.color = temp;
     }
 
     protected IEnumerator TickleCD(float cd)
@@ -392,6 +396,25 @@ public class Player : MonoBehaviour
         fartMeter = 0;
         fartBar.fillAmount = 0;
         
+        StartCoroutine("Respawn", 1f);
+    }
+
+    public IEnumerator Respawn(float delay)
+    {
+        foreach(GameObject g in GameObject.FindGameObjectsWithTag("Collectable"))
+        {
+            g.GetComponent<Collectable>().Respawn(delay);
+        }
+        
+        yield return new WaitForSeconds(delay);
+
+        transform.position = respawnPos;
+
+        
+
+        alive = true;
+        GetComponent<Animator>().enabled = false;
+
     }
 
 

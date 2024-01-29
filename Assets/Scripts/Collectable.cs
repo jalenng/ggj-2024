@@ -26,10 +26,13 @@ public class Collectable : MonoBehaviour
     {
         if (other.tag == "Player")
         {
-            //Debug.Log("Collided with player");
-            // player executes code 
-            other.GetComponent<Player>().OnCollect(this);
-            StartCoroutine(CollectCoroutine());
+            if (other.GetComponent<Player>().alive)
+            {
+                //Debug.Log("Collided with player");
+                // player executes code 
+                other.GetComponent<Player>().OnCollect(this);
+                StartCoroutine(CollectCoroutine());
+            }
         }
     }
 
@@ -47,6 +50,25 @@ public class Collectable : MonoBehaviour
 
         // Destroy object after SFX plays completely
         yield return new WaitForSeconds(collected_sfx.length);
-        Destroy(gameObject);
+        //Destroy(gameObject);
+        
+        this.GetComponent<Renderer>().enabled = false;
+        this.GetComponent<Collider2D>().enabled = false;
+        
+        //Respawn(5f);
+    }
+
+    public void Respawn(float delay)
+    {
+        StopCoroutine("RespawnTimer");
+        StartCoroutine("RespawnTimer", delay);
+    }
+
+    public IEnumerator RespawnTimer(float delay)
+    {
+        yield return new WaitForSeconds(delay);
+
+        this.GetComponent<Renderer>().enabled = true;
+        this.GetComponent<Collider2D>().enabled = true;
     }
 }
