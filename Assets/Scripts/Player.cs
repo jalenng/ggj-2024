@@ -409,9 +409,11 @@ public class Player : MonoBehaviour
         {
             g.GetComponent<Collectable>().Respawn(delay);
         }
+        yield return new WaitForSeconds(delay);
+        
         spriteRenderer.enabled = false;
         yield return new WaitForSeconds(delay);
-
+        
         transform.position = respawnPos;
         spriteRenderer.enabled = true;
         
