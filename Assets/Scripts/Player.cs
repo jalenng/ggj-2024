@@ -31,7 +31,7 @@ public class Player : MonoBehaviour
     Vector2 respawnPos;
     public  bool alive = true;
 
-    
+
     [SerializeField] protected bool farting = false;
     [SerializeField] protected bool deflating = false;
     [SerializeField] protected bool canTickle = true;
@@ -396,7 +396,7 @@ public class Player : MonoBehaviour
         fartMeter = 0;
         fartBar.fillAmount = 0;
         
-        StartCoroutine("Respawn", 1f);
+        StartCoroutine("Respawn", .5f);
     }
 
     public IEnumerator Respawn(float delay)
