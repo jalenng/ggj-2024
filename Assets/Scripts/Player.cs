@@ -381,7 +381,7 @@ public class Player : MonoBehaviour
     // ..
     // HandleDeath() -- what happens when player dies
     // ..
-    protected void HandleDeath()
+    public void HandleDeath()
     {
         Debug.Log("DIE");
         alive = false;
