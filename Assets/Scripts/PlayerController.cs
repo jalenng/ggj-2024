@@ -109,7 +109,7 @@ public class PlayerController : MonoBehaviour
         if (context.control.device.deviceId != gamepad_id) return;
         // read the value for the "move" action each event call
         moveAmount = context.ReadValue<Vector2>() * 2f;
-        Debug.Log("device " + gamepad_id + ": " + moveAmount);
+        //Debug.Log("device " + gamepad_id + ": " + moveAmount);
         cursorTF.localPosition = transform.localPosition + new Vector3(moveAmount.x,moveAmount.y,0f);
     }
 
@@ -230,6 +230,7 @@ public class PlayerController : MonoBehaviour
     public void OnTickle(InputAction.CallbackContext context)
     {
         // disable tickling while farting or recent tickle
+        if (context.control.device.deviceId != gamepad_id) return;
 
         if (canTickle)
         {
@@ -285,6 +286,8 @@ public class PlayerController : MonoBehaviour
     // ..
     public void OnFart(InputAction.CallbackContext context)
     {
+        if (context.control.device.deviceId != gamepad_id) return;
+
         //if (fartMeter == 100)
         if ((numFarts > 0 && fartMeter > 0) && !farting)
         {
@@ -294,11 +297,9 @@ public class PlayerController : MonoBehaviour
             farting = true;
             deflate_rate = 1f;
             deflating = true;
-            body.gravityScale = fart_grav_scale;
+            //body.gravityScale = fart_grav_scale;
 
             // fart_emitter.SetActive(true);
-
-            numFarts = 0;
 
             Color temp = fart_indicator.color;
             temp.a = 0.5f;
@@ -328,7 +329,7 @@ public class PlayerController : MonoBehaviour
         }
         else
         {
-            Debug.Log("WARNING: NO FARTS LEFT");
+            //Debug.Log("WARNING: NO FARTS LEFT");
         }
     }
 
@@ -340,7 +341,7 @@ public class PlayerController : MonoBehaviour
         // fart_emitter.GetComponent<Animator>().SetBool("Farting",false);
         fart_emitter.GetComponent<ParticleSystem>().Stop();
         farting = false;
-        body.gravityScale = 1;
+        //body.gravityScale = 1;
         body.velocity = Vector2.zero;
         //fart_emitter.SetActive(false);
         audioSource.Stop();
@@ -352,7 +353,7 @@ public class PlayerController : MonoBehaviour
         handle_tickle_cd = TickleCD(tickle_cooldown);
 
         canTickle = false;
-        body.gravityScale = fart_grav_scale;
+        //body.gravityScale = fart_grav_scale;
 
         for (int i = 0; i < 5; i++)
         {
@@ -367,7 +368,7 @@ public class PlayerController : MonoBehaviour
         yield return new WaitForSeconds(.2f);
 
         canTickle = true;
-        body.gravityScale = 1;
+        //body.gravityScale = 1;
     }
 
     public void UpdateSprite()
@@ -419,7 +420,7 @@ public class PlayerController : MonoBehaviour
     {
         Debug.Log("DIE");
         alive = false;
-        body.gravityScale = 1f;
+        //body.gravityScale = 1f;
 
         // TEMP DEATH; REPLACE THIS WITH ANIMATION LATER
         //deflating = true;

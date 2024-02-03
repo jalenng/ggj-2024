@@ -15,7 +15,7 @@ public class GameManager : MonoBehaviour
     void Start()
     {
         players = new List<GameObject>();
-        int i = 0;
+        
         foreach(InputDevice device in InputSystem.devices)
         {
             if (device.description.deviceClass != "Keyboard" &&
@@ -25,6 +25,19 @@ public class GameManager : MonoBehaviour
                 GameObject newplayer = GameObject.Instantiate(playerPrefab, new Vector3(0, 0, 0), Quaternion.identity);
                 newplayer.GetComponentInChildren<PlayerController>().gamepad_id = device.deviceId;
                 players.Add(newplayer);
+            }
+        }
+        int i = 0;
+        foreach(GameObject player in players)
+        {
+            int j = 0;
+            foreach(GameObject pl in players)
+            {
+                if(pl != player)
+                {
+                    player.GetComponentInChildren<ParticleSystem>().trigger.SetCollider(j, pl.GetComponentInChildren<Collider2D>());
+                    j += 1;
+                }
             }
         }
     }

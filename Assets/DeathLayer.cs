@@ -22,7 +22,7 @@ public class DeathLayer : MonoBehaviour
         {
             //Debug.Log("Collided with player");
             // player executes code 
-            other.GetComponent<Player>().HandleDeath();
+            other.GetComponent<PlayerController>().HandleDeath();
 
         }
     }
