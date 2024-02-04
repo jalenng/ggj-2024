@@ -178,6 +178,12 @@ public class PlayerController : MonoBehaviour
         }
     }
 
+    public void FarticleHit(Vector3 velocity)
+    {
+        Debug.Log("GOT HIT! " + velocity);
+        body.AddForce(velocity * 50f);
+    }
+
     void Ground()
     {
         grounded = true;

@@ -35,7 +35,7 @@ public class GameManager : MonoBehaviour
             {
                 if(pl != player)
                 {
-                    player.GetComponentInChildren<ParticleSystem>().trigger.SetCollider(j, pl.GetComponentInChildren<Collider2D>());
+                    player.GetComponentInChildren<ParticleSystem>().trigger.SetCollider(j, pl.GetComponentInChildren<BoxCollider2D>());
                     j += 1;
                 }
             }
